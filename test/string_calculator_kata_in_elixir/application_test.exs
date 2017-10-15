@@ -14,16 +14,15 @@ defmodule StringCalculatorKataInElixir.ApplicationTest do
     assert StringCalculatorKataInElixir.Application.parse("Alice ") === "READ(Alice)"
   end
 
-  test "post command" do
-    assert StringCalculatorKataInElixir.Application.parse("Alice -> I love the weather today") === "POST(Alice, I love the weather today)"
+  test "post command when user does not exist" do
+    assert StringCalculatorKataInElixir.Application.parse("Alice -> I love the weather today") ===
+      %{"Alice" => %StringCalculatorKataInElixir.User{connections: [], messages: ["I love the weather today"]}}
   end
 
-  test "post command with spaces at the beginning" do
-    assert StringCalculatorKataInElixir.Application.parse(" Alice -> I love the weather today") === "POST(Alice, I love the weather today)"
-  end
-
-  test "post command with spaces at the end" do
-    assert StringCalculatorKataInElixir.Application.parse("Alice -> I love the weather today ") === "POST(Alice, I love the weather today)"
+  test "post command when user already exists" do
+    assert StringCalculatorKataInElixir.Application.parse("Alice -> The sun is beautiful",
+      %{"Alice" => %StringCalculatorKataInElixir.User{connections: [], messages: ["I love the weather today"]}}) ===
+      %{"Alice" => %StringCalculatorKataInElixir.User{connections: [], messages: ["The sun is beautiful", "I love the weather today"]}}
   end
 
   test "follows command" do
